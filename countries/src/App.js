@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
+import MapWithAMarker from './MapContainer';
+
 
 class App extends Component {
 
@@ -13,21 +15,17 @@ class App extends Component {
 
   componentDidMount() {
     console.log('COMPONENT HAS MOUNTED')
-    var that = this;
-    fetch('http://localhost:3000/api/countries').then(function (res) {
+    fetch('http://localhost:3000/api/countries')
+    .then(res => {
       res
         .json()
-        .then(function (data) {
-          that.setState({
-            countries:data
-          })
+        .then(data => {
+          this.setState({countries: data})
         })
     })
-
   }
 
   addCountry(event) {
-    var that = this;
     event.preventDefault();
     let country_data = {
       country_name: this.refs.country_name.value
@@ -38,14 +36,14 @@ class App extends Component {
       body: JSON.stringify(country_data)
     });
 
-    fetch(request).then(function (response) {
+    fetch(request).then((response) => {
       response
         .json()
-        .then(function (data) {
-          let countries = that.state.countries;
+        .then((data) => {
+          let countries = this.state.countries;
           countries.push(country_data);
           console.log(countries)
-          that.setState({countries: countries})
+          this.setState({countries: countries})
         })
         .catch(function (err) {
           console.log(err)
@@ -55,7 +53,6 @@ class App extends Component {
 
   render() {
     const {title, countries} = this.state;
-    console.log(countries)
     return (
       <div className="App">
         {title}
@@ -66,6 +63,13 @@ class App extends Component {
             .bind(this)}>Add Country</button>
           <pre>{JSON.stringify(countries)}</pre>
         </form>
+        <MapWithAMarker
+          countries={countries}
+          googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJV7-fNmWFhS7e84lxTpqlw-4xNrHTUSo&v=3.exp&libraries=geometry,drawing,places"
+          loadingElement={<div style={{ height: `100%` }} />}
+          containerElement={<div style={{ height: `400px` }} />}
+          mapElement={<div style={{ height: `100%` }} />}
+        />
       </div>
     );
   }

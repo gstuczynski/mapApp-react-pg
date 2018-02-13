@@ -40,12 +40,16 @@ app.get('/api/countries', function(req, res){
         if(err){
             return res.status(400).send(err)
         }else{
-            db.query('Select * from test', function(err, table){
-                console.log('aa'+table)
+            db.query('Select name, ST_AsGeoJSON(geom) AS geom from test', function(err, table){
                 if(err){
                     return res.status(400).send(err)
                 }else{
-                    return res.status(200).send(table.rows)
+                    return res.status(200).send(
+                        table.rows.map((row) => {
+                            row.geom = JSON.parse(row.geom);
+                            return row;
+                        })
+                    )
                 }
             })
         }
