@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import './App.css';
 import MapWithAMarker from './MapContainer';
 
-
 class App extends Component {
 
   constructor() {
@@ -15,8 +14,7 @@ class App extends Component {
 
   componentDidMount() {
     console.log('COMPONENT HAS MOUNTED')
-    fetch('http://localhost:3000/api/countries')
-    .then(res => {
+    fetch('http://localhost:3000/api/countries').then(res => {
       res
         .json()
         .then(data => {
@@ -25,23 +23,30 @@ class App extends Component {
     })
   }
 
-  addCountry(event) {
+  onMapClick(event){
+    console.log(event.latLng.lat())
+    this.setState({selectedPlace: {'lat': event.latLng.lat(), 'lng': event.latLng.lng()}})
+  }
+
+  addGuideline(event){
     event.preventDefault();
-    let country_data = {
-      country_name: this.refs.country_name.value
+    console.log(this.state)
+    let guideline_data = {
+      guideline_name: this.refs.guideline_name.value, 
+      guideline_city: this.refs.guideline_city.value,
+      coords: this.state.selectedPlace
     }
-    var request = new Request('http://localhost:3000/api/new-country', {
+    var request = new Request('http://localhost:3000/api/add-guideline', {
       method: 'POST',
       headers: new Headers({'Content-Type': 'application/json'}),
-      body: JSON.stringify(country_data)
+      body: JSON.stringify(guideline_data)
     });
-
     fetch(request).then((response) => {
       response
         .json()
         .then((data) => {
           let countries = this.state.countries;
-          countries.push(country_data);
+          countries.push(guideline_data);
           console.log(countries)
           this.setState({countries: countries})
         })
@@ -57,19 +62,19 @@ class App extends Component {
       <div className="App">
         {title}
         <form>
-          <input type="text" ref="country_name"/>
-          <button onClick={this
-            .addCountry
-            .bind(this)}>Add Country</button>
-          <pre>{JSON.stringify(countries)}</pre>
+          Guideline Name
+          <input type="text" ref="guideline_name"/>
+          City
+          <input type="text" ref="guideline_city"/>
+          <button onClick={this.addGuideline.bind(this)}>Add Guideline</button>
         </form>
         <MapWithAMarker
           countries={countries}
+          onClick={this.onMapClick.bind(this)}
           googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJV7-fNmWFhS7e84lxTpqlw-4xNrHTUSo&v=3.exp&libraries=geometry,drawing,places"
-          loadingElement={<div style={{ height: `100%` }} />}
-          containerElement={<div style={{ height: `400px` }} />}
-          mapElement={<div style={{ height: `100%` }} />}
-        />
+          loadingElement={< div style = {{ height: `100%` }}/>}
+          containerElement={< div style = {{ height: `400px` }}/>}
+          mapElement={< div style = {{ height: `100%` }}/>}/>
       </div>
     );
   }

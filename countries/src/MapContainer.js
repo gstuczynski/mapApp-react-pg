@@ -15,6 +15,8 @@ const parseCoordinate = ([x, y]) => {
   return { lat: x, lng: y }
 };
 
+
+
 const countryMapper = ({ name, geom: { coordinates } }) => {
   if (!_.isArray(coordinates[0][0][0])) {
     return <SinglePolygonCountry coordinates={coordinates[0]} key={name} />
@@ -67,29 +69,20 @@ const MapWithAMarker = withScriptjs(withGoogleMap(props => {
     ['Ciampino',  38262,      11]
   ];
 
+  const renderMarkers = () => {
+   return <Marker
+    position={{ lat: -34.397, lng: 150.644 }}
+  />
+  }
 
   return (
     <div>
-    <KmlLayer
-      url="http://www.geocodezip.com/geoxml3_test/world_countries_kml.xml"
-      options={{ preserveViewport: true }}
-    />
-
         <GoogleMap
     defaultZoom={8}
     defaultCenter={{ lat: -34.397, lng: 150.644 }}
+    onClick={props.onClick}
   >
-    <Marker
-      position={{ lat: -34.397, lng: 150.644 }}
-    />
-    <Polygon
-      path={[
-        {lat: 25.774, lng: -80.190},
-        {lat: 18.466, lng: -66.118},
-        {lat: 32.321, lng: -64.757},
-        {lat: 25.774, lng: -80.190}
-      ]}
-    />
+    {renderMarkers()}
   </GoogleMap>
   <div className={'my-pretty-chart-container'}>
         <Chart
