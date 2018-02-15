@@ -70,11 +70,10 @@ app.post('/api/add-guideline', function (req, res) {
                 done();
                 if (err) {
                     console.log(err)
-
                     return res.status(400).send(err);
                 } else {
                     db.end();
-                    res.status(200).send({message: 'Data inserted!'})
+                   return res.status(200).send({message: 'Data inserted!'})
                 }
             })
         }
@@ -86,6 +85,25 @@ app.get('/api/get-country', function(req, res){
         res.header("Content-Type", "application/xml");
         res.status(200).send(data)
      });
+})
+
+app.get('/api/get-guidelines', (req, res)=>{
+    pool.connect(function(err, db, done){
+        if(err){
+            return res.status(400).send(err)
+        }else{
+            db.query(`select guideline_name, city, id, json_build_object('lat', coords[0], 'lng', coords[1]) as coords from guidelines`, (err, table) => {
+                if(err){
+                    return res.status(400).send(err)
+                    console.log(err)
+                }else{
+                    console.log(table.rows)
+
+                    return res.status(200).send(table.rows)
+                }
+            })
+        }
+    })
 })
 
 app.listen(PORT, () => console.log('Listening on port ' + PORT))

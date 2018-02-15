@@ -9,7 +9,7 @@ import {
 import React from 'react';
 import _ from 'underscore';
 import { Chart } from 'react-google-charts';
-
+const { SearchBox } = require("react-google-maps/lib/components/places/SearchBox");
 
 const parseCoordinate = ([x, y]) => {
   return { lat: x, lng: y }
@@ -69,20 +69,21 @@ const MapWithAMarker = withScriptjs(withGoogleMap(props => {
     ['Ciampino',  38262,      11]
   ];
 
-  const renderMarkers = () => {
-   return <Marker
-    position={{ lat: -34.397, lng: 150.644 }}
-  />
-  }
+  const renderMarkers = (g) => {
+    console.log(g)
+    return (
+    <Marker key={g.id} position={ g.coords }/>
+)}
 
   return (
+    
     <div>
+          {props.guidelines.map(renderMarkers)}
         <GoogleMap
     defaultZoom={8}
-    defaultCenter={{ lat: -34.397, lng: 150.644 }}
+    defaultCenter={{ lat: -33.49, lng: 151.934 }}
     onClick={props.onClick}
   >
-    {renderMarkers()}
   </GoogleMap>
   <div className={'my-pretty-chart-container'}>
         <Chart

@@ -8,29 +8,29 @@ class App extends Component {
     super();
     this.state = {
       title: 'Countries',
-      countries: []
-    }
+      guidelines: []
+      }
   }
 
   componentDidMount() {
     console.log('COMPONENT HAS MOUNTED')
-    fetch('http://localhost:3000/api/countries').then(res => {
+    fetch('http://localhost:3000/api/get-guidelines').then(res => {
       res
         .json()
         .then(data => {
-          this.setState({countries: data})
+          this.setState({guidelines: data})
+          console.log(data)
         })
     })
   }
 
   onMapClick(event){
-    console.log(event.latLng.lat())
+    console.log(event)
     this.setState({selectedPlace: {'lat': event.latLng.lat(), 'lng': event.latLng.lng()}})
   }
 
   addGuideline(event){
     event.preventDefault();
-    console.log(this.state)
     let guideline_data = {
       guideline_name: this.refs.guideline_name.value, 
       guideline_city: this.refs.guideline_city.value,
@@ -44,20 +44,20 @@ class App extends Component {
     fetch(request).then((response) => {
       response
         .json()
-        .then((data) => {
-          let countries = this.state.countries;
-          countries.push(guideline_data);
-          console.log(countries)
-          this.setState({countries: countries})
+        .then(() => {
+          let guidelines = this.state.guidelines;
+          guidelines.push(guideline_data);
+          this.setState({guidelines: guidelines})
         })
-        .catch(function (err) {
+        .catch((err) => {
           console.log(err)
         })
     })
   }
 
   render() {
-    const {title, countries} = this.state;
+    const {title, guidelines} = this.state;
+    console.log(guidelines)
     return (
       <div className="App">
         {title}
@@ -69,7 +69,7 @@ class App extends Component {
           <button onClick={this.addGuideline.bind(this)}>Add Guideline</button>
         </form>
         <MapWithAMarker
-          countries={countries}
+          guidelines={guidelines}
           onClick={this.onMapClick.bind(this)}
           googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJV7-fNmWFhS7e84lxTpqlw-4xNrHTUSo&v=3.exp&libraries=geometry,drawing,places"
           loadingElement={< div style = {{ height: `100%` }}/>}
