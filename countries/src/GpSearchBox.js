@@ -1,7 +1,6 @@
+/*global google*/
 
-/* global google */
 import React from 'react';
-
 const _ = require("lodash");
 const { compose, withProps, lifecycle } = require("recompose");
 const {
@@ -12,15 +11,7 @@ const {
 } = require("react-google-maps");
 const { SearchBox } = require("react-google-maps/lib/components/places/SearchBox");
 
-
-
-const MapWithSearchBox = (compose(
-  withProps({
-    googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyAJV7-fNmWFhS7e84lxTpqlw-4xNrHTUSo&v=3.exp&libraries=geometry,drawing,places",
-    loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `400px` }} />,
-    mapElement: <div style={{ height: `100%` }} />,
-  }),
+const GpSearchBox = compose(
   lifecycle({
     componentWillMount() {
       const refs = {}
@@ -68,16 +59,7 @@ const MapWithSearchBox = (compose(
       })
     },
   }),
-  withScriptjs,
-  withGoogleMap
 )(props =>
-    <div>
-  <GoogleMap
-    ref={props.onMapMounted}
-    defaultZoom={15}
-    center={props.center}
-    onBoundsChanged={props.onBoundsChanged}
-  >
     <SearchBox
       ref={props.onSearchBoxMounted}
       bounds={props.bounds}
@@ -102,11 +84,6 @@ const MapWithSearchBox = (compose(
         }}
       />
     </SearchBox>
-    {props.markers.map((marker, index) =>
-      <Marker key={index} position={marker.position} />
-    )}
-  </GoogleMap>
-  </div>
-));
+);
 
-export default MapWithSearchBox;
+export default GpSearchBox;

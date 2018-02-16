@@ -27,26 +27,17 @@ const addGuideline = (event) => {
 }
 
 
+
+
 const GuidelineForm = props => {
   return (
-    <form onSubmit={props.onSubmit}>
-    <input type="text" name="username" onChange={props.onChangeUsername} value={props.username}/>
-    { props.userNameError && <span class="error">{ props.usernameError }</span> }
-    <input type="password" name="password" onChange={props.onChangePassword} value={props.password}/>
-    { props.passwordError && <span class="error">{ props.passwordError }</span> }
-    <input type="submit" value="Log in"/>
-  </form>
-  );
-};
+    <form>
+    Guideline Name <input type="text" ref="guideline_name"/>
+    City <input type="text"/>
 
-GuidelineForm.propTypes = {
-  username: React.PropTypes.string.isRequired,
-  usernameError: React.PropTypes.string.isRequired,
-  password: React.PropTypes.string.isRequired,
-  passwordError: React.PropTypes.string.isRequired,
-  onChangeUsername: React.PropTypes.func.isRequired,
-  onChangePassword: React.PropTypes.func.isRequired,
-  onSubmit: React.PropTypes.func.isRequired
+    <button >Add Guideline</button>
+    </form>
+  );
 };
 
 export default GuidelineForm;
