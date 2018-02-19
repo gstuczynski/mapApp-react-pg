@@ -66,7 +66,7 @@ app.post('/api/add-guideline', function (req, res) {
             console.log(err)
             return res.status(400).send(err);
         } else {
-            db.query('Insert INTO guidelines (guideline_name, city, coords) VALUES($1, $2, POINT($3, $4))', [guideline_name, city, coords.lat, coords.lng], (err, table) => {
+            db.query('Insert INTO guidelines (guideline_name, coords) VALUES($1, POINT($2, $3))', [guideline_name,  coords.lat, coords.lng], (err, table) => {
                 done();
                 if (err) {
                     console.log(err)

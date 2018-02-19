@@ -39,9 +39,6 @@ const Graphs = () => {
         ['Ciampino',  38262,      11]
       ];
     
-
-
-
   return (
     <div className="container">
       
