@@ -13,20 +13,30 @@ import _ from 'underscore';
 import {Chart} from 'react-google-charts';
 import GoogleMapsWrapper from './GoogleMapsWrapper.js';
 import HeatmapLayer from "react-google-maps/lib/components/visualization/HeatmapLayer";
+import GuidelinesActions from './actions/guidelinesActions'
+import GuidelinesStore from "./stores/guidelinesStore.js";
+import connectToStores from './connectToStores';
 
-
-const renderMarkers = (g) => {
+const renderMarkers = (g) => {  
   return (<Marker key={g.id} position={g.coords}/>)
 }
 
 const renderHeatmap = (gs) => {
-  let data = [];
+ /* let data = [];
   gs.forEach( g => {
     data.push(new google.maps.LatLng(g.coords.lat, g.coords.lng))
   });
   console.log(data);
-  return(<HeatmapLayer data = {data} />)
+  return(<HeatmapLayer data = {data} />)*/
 }
+
+const storeConnector = {
+  GuidelinesStore(Store) {
+    return {
+      guidelines: Store.getGuidelines()
+    };
+  },
+};
 
 class Map extends React.Component {
 
@@ -34,22 +44,13 @@ class Map extends React.Component {
     super();
     this.state = {
       title: 'Countries',
-      guidelines: [],
       center: {},
-      mode: 'heatmap',
+      mode: 'markers',
     }
   }
 
   componentDidMount() {
-    console.log('COMPONENT HAS MOUNTED')
-    fetch('http://localhost:3000/api/get-guidelines').then(res => {
-      res
-        .json()
-        .then(data => {
-          console.log(data)
-          this.setState({guidelines: data})
-        })
-    })
+    GuidelinesActions.fetchGuidelines();
   }
 
   onMapClick(event){
@@ -58,7 +59,8 @@ class Map extends React.Component {
   }
 
   render() {
-    const { mode, guidelines } = this.state;
+    const { mode } = this.state;
+    const { guidelines } = this.props;
     return (
       <div>
         <button>Heatmap</button>       
@@ -73,14 +75,14 @@ class Map extends React.Component {
           }}
           onClick={this.onMapClick}
         >
-         {mode === 'markers' && guidelines.map(renderMarkers)}
-         {mode === 'heatmap' && renderHeatmap(guidelines)}
-}
-{//renderHeatmap(guidelines)
-}
+          {mode === 'markers' && guidelines.map(renderMarkers)}
+          {mode === 'heatmap' && renderHeatmap(guidelines)}
+          {/*renderHeatmap(guidelines)*/}
         </GoogleMapsWrapper>
       </div>
     );
   }
 }
-export default Map;
+
+export default connectToStores(Map, GuidelinesStore, storeConnector);
+  

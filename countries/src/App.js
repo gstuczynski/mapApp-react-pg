@@ -3,7 +3,7 @@ import './App.css';
 import Map from './MapContainer';
 import './styles/style.css';
 import Graphs from './Graphs'
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 const App = () => (
   <div className="App">
