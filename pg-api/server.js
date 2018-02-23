@@ -1,9 +1,10 @@
-let express = require('express');
-let bodyParser = require('body-parser');
-let morgan = require('morgan');
-let pg = require('pg');
-let fs = require('fs');
-let xml = require("xml-parse");
+const express = require('express');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const pg = require('pg');
+const fs = require('fs');
+const xml = require("xml-parse");
+const GeoJSON = require('geojson');
 
 const PORT = 3000;
 
@@ -106,4 +107,12 @@ app.get('/api/get-guidelines', (req, res)=>{
     })
 })
 
+
+app.get('/api/get-boundary', function(req, res){
+    fs.readFile( 'assets/data.json', 'utf-8' ,function(err, data) {
+       let x = data.sovereignt
+console.log(err, x)
+        res.status(200).send(data)
+     });
+})
 app.listen(PORT, () => console.log('Listening on port ' + PORT))
