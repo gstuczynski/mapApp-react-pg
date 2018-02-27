@@ -5,17 +5,23 @@ class MapStore {
     constructor() {
         this.state = {
             selectedPlace: {},
+            selectedIsoA2: '',
             countries: []
         };
         this.bindActions(MapActions);    //chce wszystkie, jak tylko wybrane to bind
         this.exportPublicMethods({
           getSelectedPlace: this.getSelectedPlace,
-          getCountries: this.getCountries
+          getCountries: this.getCountries,
+          getSelectedIsoA2: this.getSelectedIsoA2
         });
     }
 
     onSelectPlace(place){
         this.setState({ selectedPlace: place });
+    }
+
+    onSelectIsoA2(code){
+        this.setState({ selectedIsoA2: code });
     }
 
     getCountries() {
@@ -24,6 +30,10 @@ class MapStore {
 
     getSelectedPlace() {
         return this.state.selectedPlace
+    }
+
+    getSelectedIsoA2() {
+        return this.state.selectedIsoA2 
     }
 
     onFetchCountriesSuccess(countries) {

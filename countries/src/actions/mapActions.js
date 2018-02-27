@@ -2,7 +2,7 @@ import alt from '../alt';
 
 class MapActions {
     constructor(){
-        this.generateActions('selectPlace', 'fetchCountriesError', 'fetchCountriesSuccess')
+        this.generateActions('selectPlace', 'fetchCountriesError', 'fetchCountriesSuccess', 'selectIsoA2')
     }
 
     fetchCountries(){
@@ -20,7 +20,7 @@ class MapActions {
                 }
             })
             .catch(error => {
-                this.fetchGuidelinesError(error)
+                this.fetchCountriesError(error)
             })
         };
     }

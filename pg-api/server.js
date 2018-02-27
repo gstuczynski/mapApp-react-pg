@@ -45,7 +45,7 @@ app.get('/api/countries', function(req, res){
             return res.status(400).send(err)
         }else{
             //Select name, ST_AsGeoJSON(ST_Transform(geom, 3857)) AS geom from countries_kml
-            db.query('Select name, ST_AsGeoJSON(wkb_geometry) AS geom from countries_imported', function(err, table){
+            db.query('Select name, ST_AsGeoJSON(wkb_geometry) AS geom from data', function(err, table){
                 if(err){
                     return res.status(400).send(err)
                     console.log(err)
@@ -62,13 +62,13 @@ app.post('/api/add-guideline', function (req, res) {
     var guideline_name = req.body.guideline_name;
     var city = req.body.guideline_city;
     var coords = req.body.coords;
-    console.log(guideline_name, city, coords)
+    var iso_a2 = req.body.iso_a2;
     pool.connect((err, db, done) => {
         if (err) {
             console.log(err)
             return res.status(400).send(err);
         } else {
-            db.query('Insert INTO guidelines (guideline_name, coords) VALUES($1, POINT($2, $3))', [guideline_name,  coords.lat, coords.lng], (err, table) => {
+            db.query('Insert INTO guidelines (guideline_name, coords, iso_a2) VALUES($1, POINT($2, $3), $4)', [guideline_name,  coords.lat, coords.lng, iso_a2], (err, table) => {
                 done();
                 if (err) {
                     console.log(err)

@@ -46,6 +46,10 @@ class GuidelinesStore {
     getError() {
         return this.state.error;
     }
+
+    onAddGuidelinesSuccess(guidelines) {
+        this.setState({guidelines})
+    }
 }
 
 export default alt.createStore(GuidelinesStore, 'GuidelinesStore');

@@ -2,7 +2,7 @@ import alt from '../alt';
 
 class GuidelinesActions {
     constructor(){
-        this.generateActions('fetchGuidelinesSuccess', 'fetchGuidelinesError')
+        this.generateActions('fetchGuidelinesSuccess', 'fetchGuidelinesError', 'addGuidelinesSuccess', 'addGuidelinesError')
     }
 
     fetchGuidelines(){
@@ -23,6 +23,27 @@ class GuidelinesActions {
                 this.fetchGuidelinesError(error)
             })
         };
+    }
+
+    addGuideline(guideline){
+        return (dispatch) => {
+            dispatch();
+            var request = new Request('http://localhost:3000/api/add-guideline', {
+                method: 'POST',
+                headers: new Headers({'Content-Type': 'application/json'}),
+                body: JSON.stringify(guideline)
+              });
+              fetch(request).then(response => {
+                response
+                  .json()
+                  .then(data => {
+                    this.addGuidelinesSuccess(data)
+                  })
+                  .catch(error => {
+                    this.addGuidelinesError(error)
+                })
+              })
+        }
     }
 }
 

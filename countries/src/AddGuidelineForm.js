@@ -3,26 +3,8 @@ import PlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-places-auto
 import MapStore from "./stores/mapStore";
 import MapActions from "./actions/mapActions";
 import connectToStores from './connectToStores';
-
-const addGuideline = (guideline) => {
-  var request = new Request('http://localhost:3000/api/add-guideline', {
-    method: 'POST',
-    headers: new Headers({'Content-Type': 'application/json'}),
-    body: JSON.stringify(guideline)
-  });
-  fetch(request).then((response) => {
-    response
-      .json()
-      .then(() => {
-        let guidelines = this.state.guidelines;
-        guidelines.push(guideline);
-        this.setState({guidelines: guidelines})
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  })
-}
+import GuidelinesActions from './actions/guidelinesActions'
+import GuidelinesStore from "./stores/guidelinesStore.js";
 
 const storeConnector = {
   GuidelinesStore(Store) {
@@ -34,7 +16,8 @@ const storeConnector = {
   },
   MapStore(Store) {
     return {
-      selectedPlace: Store.getSelectedPlace()
+      selectedPlace: Store.getSelectedPlace(),
+      selectedIsoA2: Store.getSelectedIsoA2()
     }
   }
 };
@@ -58,16 +41,15 @@ class AddGuidelineForm extends React.Component {
     geocodeByAddress(this.state.address)
       .then(results => getLatLng(results[0]))
       .then(latLng => {
-        console.log('Success', latLng)
         let guideline = {
           guideline_name: guideline_name,
+          iso_a2: this.props.selectedIsoA2,
           coords: {
             'lat': latLng.lat,
             'lng': latLng.lng
           }
         }
-        console.log(guideline)
-        addGuideline(guideline)
+        GuidelinesActions.addGuideline(guideline)
       })
       .catch(error => console.error('Error', error))
   }
@@ -81,7 +63,6 @@ class AddGuidelineForm extends React.Component {
       console.log('Success', latLng)
     })
     .catch(error => console.error('Error', error))
-  
   }
 
   render() {
@@ -89,6 +70,7 @@ class AddGuidelineForm extends React.Component {
       value: this.state.address,
       onChange: this.onChange
     }
+    console.log('isoo',this.props.selectedIsoA2)
 
     return (
       <form onSubmit={this.handleFormSubmit}>

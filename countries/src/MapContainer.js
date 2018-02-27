@@ -21,7 +21,6 @@ import MapActions from "./actions/mapActions";
 import connectToStores from './connectToStores';
 import ReactLoading from 'react-loading';
 
-
 const renderGuidelineMarker = (g) => {
   return (<Marker key={g.id} position={g.coords} />)
 }
@@ -34,13 +33,46 @@ const parseCoordinate = ([x, y]) => {
   return {lat: y, lng: x}
 };
 
+const getPlaceDetails = (coords) =>{
+  console.log('coords',coords)
+  const geocoder = new google.maps.Geocoder;
+  return new Promise ((resolve, reject) => {
+    geocoder.geocode({'location': coords},(res, status) => {
+      if (status === 'OK') {
+        const country = _.find(res[0].address_components, (addr) =>
+          _.some(addr.types, (type) => type === 'country')
+        );
+        const countryCode = country ? country.short_name : null;
+        resolve(countryCode);
+      } else {
+        reject('Cannot geolocate, bitch!')
+      }
+    })
+  });
+}
+
+const onMapClick = (event) => {
+  console.log(event)
+  let sp = {
+    'lat': event
+      .latLng
+      .lat(),
+    'lng': event
+      .latLng
+      .lng()
+  }
+  MapActions.selectPlace(sp);
+  //console.log('getPlaceDetails',getPlaceDetails(sp))
+  getPlaceDetails(sp).then(MapActions.selectIsoA2)
+}
+
 const renderCountriesPolygons = (country) => {
   if(JSON.parse(country.geom).type == "Polygon"){
     let path = JSON.parse(country.geom).coordinates[0].map(parseCoordinate)
-    return (<Polygon path={path} />)
+    return (<Polygon onClick={onMapClick}  path={path} />)
   }else{
     let paths = JSON.parse(country.geom).coordinates.map(coord => coord[0].map(parseCoordinate))
-    return (<Polygon paths={paths} />)
+    return (<Polygon onClick={onMapClick} paths={paths} />)
   }
 };
 
@@ -64,7 +96,8 @@ const storeConnector = {
   MapStore(Store) {
     return {
       selectedPlace: Store.getSelectedPlace(),
-      countries: Store.getCountries()
+      countries: Store.getCountries(),
+      selectedIsoA2: Store.getSelectedIsoA2()
     }
   }
 };
@@ -85,18 +118,8 @@ class Map extends React.Component {
     MapActions.fetchCountries();
   }
 
-  onMapClick(event) {
-    MapActions.selectPlace({
-      'lat': event
-        .latLng
-        .lat(),
-      'lng': event
-        .latLng
-        .lng()
-    });
-  }
-
   render() {
+    console.log('mapcont', this.props.selectedIsoA2)
     const {mode} = this.state;
     const {guidelines, isFetching, error, selectedPlace, countries} = this.props;
     if (!isFetching && !error) {
@@ -113,9 +136,7 @@ class Map extends React.Component {
             lat: -33.49,
             lng: 151.934
           }}
-            onClick={this
-            .onMapClick
-            .bind(this)}>
+            onClick={onMapClick}>
             {mode === 'markers' && guidelines.map(renderGuidelineMarker)}
             {mode === 'heatmap' && renderHeatmap(guidelines)}
             {selectedPlace && renderTemporaryMarker(selectedPlace)}
