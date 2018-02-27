@@ -21,6 +21,7 @@ import MapActions from "./actions/mapActions";
 import connectToStores from './connectToStores';
 import ReactLoading from 'react-loading';
 
+
 const renderGuidelineMarker = (g) => {
   return (<Marker key={g.id} position={g.coords} />)
 }
@@ -28,6 +29,20 @@ const renderGuidelineMarker = (g) => {
 const renderTemporaryMarker = (coords) => {
   return (<Marker position={coords} label='tmp'/>)
 }
+
+const parseCoordinate = ([x, y]) => {
+  return {lat: y, lng: x}
+};
+
+const renderCountriesPolygons = (country) => {
+  if(JSON.parse(country.geom).type == "Polygon"){
+    let path = JSON.parse(country.geom).coordinates[0].map(parseCoordinate)
+    return (<Polygon path={path} />)
+  }else{
+    let paths = JSON.parse(country.geom).coordinates.map(coord => coord[0].map(parseCoordinate))
+    return (<Polygon paths={paths} />)
+  }
+};
 
 const renderHeatmap = (gs) => {
   /* let data = [];
@@ -48,12 +63,13 @@ const storeConnector = {
   },
   MapStore(Store) {
     return {
-      selectedPlace: Store.getSelectedPlace()
+      selectedPlace: Store.getSelectedPlace(),
+      countries: Store.getCountries()
     }
   }
 };
 
-class MapBoxTest extends React.Component {
+class Map extends React.Component {
 
   constructor() {
     super();
@@ -66,11 +82,10 @@ class MapBoxTest extends React.Component {
 
   componentDidMount() {
     GuidelinesActions.fetchGuidelines();
+    MapActions.fetchCountries();
   }
 
   onMapClick(event) {
-
-    //console.log(event)
     MapActions.selectPlace({
       'lat': event
         .latLng
@@ -79,25 +94,15 @@ class MapBoxTest extends React.Component {
         .latLng
         .lng()
     });
-    /*  this.setState({
-      selectedPlace: {
-        'lat': event
-          .latLng
-          .lat(),
-        'lng': event
-          .latLng
-          .lng()
-      }
-    })*/
   }
 
   render() {
     const {mode} = this.state;
-    const {guidelines, isFetching, error, selectedPlace} = this.props;
-    console.log(selectedPlace)
+    const {guidelines, isFetching, error, selectedPlace, countries} = this.props;
     if (!isFetching && !error) {
       return (
         <div>
+          {countries.map(renderCountriesPolygons)}
           <button>Heatmap</button>
           <GoogleMapsWrapper
             loadingElement={< div style = {{ height: `100%` }}/>}
@@ -114,6 +119,9 @@ class MapBoxTest extends React.Component {
             {mode === 'markers' && guidelines.map(renderGuidelineMarker)}
             {mode === 'heatmap' && renderHeatmap(guidelines)}
             {selectedPlace && renderTemporaryMarker(selectedPlace)}
+            {countries.map(renderCountriesPolygons)}
+            {renderTemporaryMarker({lat: 50.053639384368, lng: 19.956848793594077})}
+            
             {/*renderHeatmap(guidelines)*/}
           </GoogleMapsWrapper>
         </div>

@@ -44,7 +44,8 @@ app.get('/api/countries', function(req, res){
         if(err){
             return res.status(400).send(err)
         }else{
-            db.query('Select name, ST_AsGeoJSON(geom) AS geom from countries_kml', function(err, table){
+            //Select name, ST_AsGeoJSON(ST_Transform(geom, 3857)) AS geom from countries_kml
+            db.query('Select name, ST_AsGeoJSON(wkb_geometry) AS geom from countries_imported', function(err, table){
                 if(err){
                     return res.status(400).send(err)
                     console.log(err)
@@ -116,3 +117,6 @@ console.log(err, x)
      });
 })
 app.listen(PORT, () => console.log('Listening on port ' + PORT))
+
+
+
